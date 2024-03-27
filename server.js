@@ -14,11 +14,16 @@ app.use(express.json());
 app.use(Cors());
 
 //DB Config
-main().catch((err) => console.log(err));
 
-async function main() {
-  await mongoose.connect(connection_url);
-}
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(connection_url);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
 
 //API Endpoints
 
@@ -46,6 +51,8 @@ app.get("/dating/cards", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Listening on Port: ${port}`);
+connectDB().then(() => {
+  app.listen(port, () => {
+    console.log(`Listening on Port: ${port}`);
+  });
 });
